@@ -3,17 +3,35 @@ import PlayerForm from './components/playerForm'
 import SearchBar from './components/searchbar'
 import { Player } from '@/app/types'
 
-async function getPlayers(search?: string): Promise<Player[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-  const res = await fetch(`${apiUrl}/api/players${search ? `?search=${search}` : ''}`, { cache: 'no-store' });
-  if (!res.ok) {
-    throw new Error('Failed to fetch players');
+async function getPlayers(searchParams: { [key: string]: string | string[] | undefined }): Promise<Player[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    const search = typeof searchParams.search === 'string' ? searchParams.search : undefined;
+    const queryString = search ? `?search=${encodeURIComponent(search)}` : '';
+    
+    const res = await fetch(`${apiUrl}/api/players${queryString}`, { 
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch players');
+    }
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch players:', error);
+    return [];
   }
-  return res.json();
 }
 
-export default async function Home({ searchParams }: { searchParams: { search?: string } }) {
-  const players = await getPlayers(searchParams.search);
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const players = await getPlayers(searchParams);
 
   const headers = ['Name', 'Latest Sprint Speed', 'Latest Vertical Jump', 'End Date', 'Actions'];
   const data = players.map(player => [

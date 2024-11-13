@@ -1,14 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Player from '@/models/player';
 
-interface RouteParams {
+type Props = {
   params: {
-    id: string;
-  };
+    id: string
+  }
 }
 
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(
+  _request: NextRequest,
+  { params }: Props
+) {
   try {
     await dbConnect();
     const player = await Player.findById(params.id);
@@ -25,7 +28,10 @@ export async function GET(request: Request, { params }: RouteParams) {
   }
 }
 
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(
+  request: NextRequest,
+  { params }: Props
+) {
   try {
     const body = await request.json();
     await dbConnect();
@@ -64,7 +70,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(
+  _request: NextRequest,
+  { params }: Props
+) {
   try {
     await dbConnect();
     const player = await Player.findByIdAndDelete(params.id);
