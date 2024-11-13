@@ -3,8 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function SearchBar() {
-  const [search, setSearch] = useState('')
+interface SearchBarProps {
+  initialSearch?: string;
+}
+
+export default function SearchBar({ initialSearch = '' }: SearchBarProps) {
+  const [search, setSearch] = useState(initialSearch)
   const router = useRouter()
 
   const handleSearch = (e: React.FormEvent) => {
