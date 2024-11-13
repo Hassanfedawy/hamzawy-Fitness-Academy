@@ -43,13 +43,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  const body = await request.json();
-  await dbConnect();
-  const player = await Player.findByIdAndUpdate(params.id, body, { new: true });
-  if (!player) {
-    return NextResponse.json({ error: 'Player not found' }, { status: 404 });
-  }
-  return NextResponse.json(player);
-}
