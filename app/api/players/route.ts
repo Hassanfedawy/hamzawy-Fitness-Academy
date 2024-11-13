@@ -5,7 +5,15 @@ import Player from '@/models/player';
 export async function GET() {
   try {
     await dbConnect();
-    const players = await Player.find();
+    const players = await Player.find({}).sort({ createdAt: -1 });
+    
+    if (!players) {
+      return NextResponse.json(
+        { error: 'No players found' },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(players);
   } catch (error) {
     console.error('API Error:', error);
